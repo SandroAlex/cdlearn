@@ -77,7 +77,7 @@ class EraInterimGrid:
         ----------
         var_labels : list of str, optional
             Codes for invariant variables according to 
-            "cdlearn.auxiliary.dict_invariant" dictionary. By default, it loads
+            "cdlearn.utils.dict_invariant" dictionary. By default, it loads
             all invariant data variables.
         """
         
@@ -85,14 +85,14 @@ class EraInterimGrid:
         if var_labels:
             self.var_labels = var_labels
         else:
-            self.var_labels = list(cdlearn.auxiliary.dict_invariant.keys())
+            self.var_labels = list(cdlearn.utils.dict_invariant.keys())
 
         # Loop over selected variables.
         for var_label in self.var_labels:
 
             # Retrieve data.
-            file_path = cdlearn.auxiliary.folder_invariant + \
-                        cdlearn.auxiliary.dict_invariant[var_label]
+            file_path = cdlearn.utils.folder_invariant + \
+                        cdlearn.utils.dict_invariant[var_label]
             data_set = xr.open_dataset(file_path)
             
             # Shift longitude coordinate.
@@ -146,7 +146,7 @@ class EraInterimGrid:
         grid = cls()
         
         # Load land surface mask as a xarray DataArray object.
-        grid.load_invariant(var_labels=["LSM"])
+        grid.load_invariant(var_labels=["lsm"])
 
         # Time, latitude, and longitude as strings.
         _, dim1, dim2 = cdlearn.utils.normalize_names(data_object)

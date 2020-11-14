@@ -40,6 +40,7 @@ def south_america(
         figsize=(8, 8),
         nrows_ncols=(1, 1),
         suptitle=None,
+		suptitle_y=0.90,
         titles=None,
         axes_pad=0.02,
         cbar_mode="single",
@@ -57,9 +58,11 @@ def south_america(
         Grid of maps to be generated.            
     suptitle : str, optional, default is None
         Title for the whole figure.
+    suptitle_y : float, optional, default is 0.90
+        Top position of suptitle.    
     titles : list of str, optional, default is None
         Titles for each map.    
-    axes_padd : float, optional, default is 0.02
+    axes_pad : float, optional, default is 0.02
         Padding between axes.    
     cbar_mode : str, optional, default is "single"
         Type of colorbar according to these options: "each", "single", "edge", 
@@ -67,11 +70,13 @@ def south_america(
     cbar_location : str, optional, default is "right"
         Location of colorbar according to these options: "left", "right", 
         "bottom", or "top".
-        
+    brazil_color : str, optional, default is "black"    
+        Color for Brazilian States boundaries.
+
     Returns
     -------
     axgr : mpl_toolkits.axes_grid1.axes_grid.ImageGrid
-        Grid of axes. In this case it is just a grid of one map.
+        Grid of axes. Default case it is just a grid with one map.
     """
     
     # Map borders.
@@ -127,7 +132,7 @@ def south_america(
 
     # Title for the whole figure.
     if suptitle:
-        plt.suptitle(suptitle, weight="bold")
+        fig.suptitle(suptitle, y=suptitle_y, weight="bold")
 
     return axgr
 
@@ -187,7 +192,7 @@ def south_america_months(
             xlocs=range(-90, -30 + 5, 5), ylocs=range(-60, 20 + 5, 5)
         ) 
         axis.set_title(
-            label=cdlearn.auxiliary.months_labels[index], weight="bold"
+            label=cdlearn.utils.months_labels[index], weight="bold"
         )                    
         
         # Brazilian states's boundaries.

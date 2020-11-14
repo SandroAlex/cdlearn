@@ -18,10 +18,30 @@ months_labels = [       # Labels for months.
     "July", "August", "September", "October", "November", "December"
 ]
 
+###############################################################################
 months_labels_pt = [   # Labels for months in Portuguese.
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ]
+
+# Invariant data from ERA-INTERIM.
+###############################################################################
+folder_invariant = "/LFASGI/sandroal/data_sets/ERA_INTERIM/invariant/"
+
+###############################################################################
+dict_invariant = {
+    "anor": "angle_of_sub_gridscale_orography.nc",
+    "isor": "anisotropy_of_sub_gridscale_orography.nc",
+    "z": "geopotential.nc",
+    "cvh": "high_vegetation_cover.nc",
+    "lsm": "land_sea_mask.nc",
+    "cvl": "low_vegetation_cover.nc",
+    "slor": "slope_of_sub_gridscale_orography.nc",
+    "sdfor": "standard_deviation_of_filtered_subgrid_orography.nc",
+    "sdor": "standard_deviation_of_orography.nc",
+    "tvh": "type_of_high_vegetation.nc",
+    "tvl": "type_of_low_vegetation.nc",
+}
 
 # Functions.
 ###############################################################################
