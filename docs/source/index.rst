@@ -6,12 +6,28 @@
 Climate Data Learn (cdlearn)
 ============================
 
-Welcome to cdlearn's documentation. This is a simple python package that I am 
-currently developing as part of my PhD thesis in atmospheric physics. 
+Welcome to cdlearn's documentation. This is a simple python package that I 
+am currently developing as part of my PhD thesis in atmospheric physics. 
+The main goal of my research is to better understand biosphere-atmosphere 
+interactions in South America. For doing this, I have been applying some 
+statistical learning methods to model these interactions.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+Images produced by cdlearn
+==========================
+
+Precipitation on South America
+------------------------------
+
+.. image:: ../../images/precipitation_mswep_monthly_climatology.jpg
+
+Land cover on South America
+-----------------------------------
+
+.. image:: ../../images/land_cover_igbp_modis_2001_2019.jpg
 
 Contact the author
 ==================
@@ -25,16 +41,3 @@ links below.
 * `Linkedin <https://www.linkedin.com/in/alex-sandro-alves-de-araujo-11aa17153/>`_
 
 * `Github <https://github.com/SandroAlex>`_
-
-Images produced by cdlearn
-==========================
-
-Precipitation on South America
-------------------------------
-
-.. image:: ../../images/precipitation_trmm_mean_pt.jpg
-
-Moisture transport on South America
------------------------------------
-
-.. image:: ../../images/specific_humidity_and_moisture_flux_erainterim_mmeans_tra_pt.jpg
