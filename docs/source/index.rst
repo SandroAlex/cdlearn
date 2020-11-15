@@ -10,7 +10,16 @@ Welcome to cdlearn's documentation. This is a simple python package that I
 am currently developing as part of my PhD thesis in atmospheric physics. 
 The main goal of my research is to better understand biosphere-atmosphere 
 interactions in South America. For doing this, I have been applying some 
-statistical learning methods to model these interactions.
+statistical learning methods to model these interactions. In this package 
+you will find some tools for plotting climate data on South America maps.
+We also provide statistical functions to analyze climate variables, 
+which are known to have spatial and temporal autocorrelation properties. 
+In addition, the multiplicity of hypothesis tests can be problem in 
+data-driven studies of the atmosphere. These characteristic properties 
+of climate data are taken into account in our library. The cdlearn's main 
+dependence is the awesome `xarray package <http://xarray.pydata.org/en/stable/>`_, 
+which makes much easier to deal with large environmental data sets in python 
+language.
 
 .. toctree::
    :maxdepth: 2
