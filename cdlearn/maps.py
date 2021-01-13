@@ -300,9 +300,9 @@ def general(
         axis.yaxis.set_major_formatter(lat_formatter)
         axis.gridlines(xlocs=xticks, ylocs=yticks)  
 
+        # And states for other countries too.
         if brazilian_states:
         
-            # Brazilian states's boundaries.
             for state in shp.geometries():
                 axis.add_geometries(
                     geoms=[state], 
