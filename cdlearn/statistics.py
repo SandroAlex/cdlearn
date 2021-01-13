@@ -8,16 +8,14 @@ Basic linear statistics for data sets.
 
 # Load packages.
 import time
-import progressbar
-import bottleneck
-import scipy
 
 import numpy as np
 import xarray as xr
-import pymannkendall as mk
 
 from importlib import reload
-from statsmodels.tsa.stattools import adfuller
+from scipy import stats
+from tqdm import tqdm
+from numba import jit
 
 # My modules.
 import cdlearn.utils
@@ -85,7 +83,7 @@ def linear_regression(
     if verbose:
         print(">>> Loop over grid points ...")
         time.sleep(1)
-        bar = progressbar.ProgressBar(max_value=Ycol.shape[1])
+        bar = tqdm(total=Ycol.shape[1])
 
     # Loop over locations.
     for i in range(Ycol.shape[1]):
@@ -95,10 +93,14 @@ def linear_regression(
         
             # Aggregate results.
             # slope, intercept, r_value, p_value, std_err.
-            r[:, i] = scipy.stats.linregress(X, Ycol[:, i])
+            r[:, i] = stats.linregress(X, Ycol[:, i])
 
         if verbose:
-            bar.update(i) 
+            bar.update(1) 
+
+    # Close progress bar.
+    if verbose:
+        bar.close()
 
     # New shape: (results, latitude, longitude).    
     r = r.reshape((5, Y.shape[1], Y.shape[2]))
@@ -178,7 +180,7 @@ def theil_slopes(
     if verbose:
         print(">>> Loop over grid points ...")
         time.sleep(1)
-        bar = progressbar.ProgressBar(max_value=Ycol.shape[1])
+        bar = tqdm(total=Ycol.shape[1])
     
     # Loop over locations.
     for i in range(Ycol.shape[1]):
@@ -187,12 +189,16 @@ def theil_slopes(
         if mask_nan[i] == False:
         
             # Aggregate results.
-            slope, intercept, _, _ = scipy.stats.theilslopes(Ycol[:, i], x=X)
+            slope, intercept, _, _ = stats.theilslopes(Ycol[:, i], x=X)
             r[0, i] = slope
             r[1, i] = intercept
                         
         if verbose:
-            bar.update(i) 
+            bar.update(1) 
+
+    # Close progress bar.
+    if verbose:
+        bar.close()
 
     # New shape: (results, latitude, longitude).    
     r = r.reshape((2, Y.shape[1], Y.shape[2]))
@@ -210,3 +216,99 @@ def theil_slopes(
         results.coords["land_mask"] = data_array.land_mask
     
     return results
+
+###############################################################################
+@jit(nogil=True)
+def _theil_slopes_ufunc(
+        y
+    ):
+    """
+    Wrapper function for `scipy.stats.theilslopes` to be used in a vectorized 
+    way in `theil_slopes_boosted` function.
+
+    Parameters
+    ----------
+    y : numpy array
+        One-dimensional data array.
+
+    Returns
+    -------
+    results : numpy array
+        Array containing the following results: (1) Theil slope, (2) Intercept
+        of the Theil line, (3) Lower and (4) upper bounds of the confidence 
+        interval on Theil slope.     
+    """       
+
+    # Dummy index in regression.
+    x = np.arange(y.shape[0])
+    
+    # Just one not a number is sufficient to spoil calculations.
+    if np.sum(np.isnan(y)) > 0:
+        
+        return np.array([np.nan, np.nan, np.nan, np.nan])
+
+    # Output.
+    else:
+
+        slope, intercept, low_slope, upp_slope = stats.theilslopes(y=y, x=x)
+        results = np.array([slope, intercept, low_slope, upp_slope])
+
+        return results
+
+###############################################################################
+def theil_slopes_boosted(
+        data_set, 
+        var_code,
+        dim="time"
+    ):
+    """
+    Pixel-wise trends using Theil-Sen slope estimator. Vectorized 
+    implementation of `_theil_slopes_ufunc`. For better performance, use 
+    `data_set` input with chunked dask arrays.
+
+    Parameters
+    ----------
+    data_set : xarray Dataset object
+        Input data containting `time` dimension.         
+    var_code : str
+        Name of the variable inside `data_set` object.       
+    dim : str, optional, default is "time"
+        Trends will be calculated along this input core dimension.
+
+    Returns
+    -------
+    results : xarray Dataset object
+        Results of Theil-Sen estimator. This object contains variables for 
+        slope (with lower and upper bounds of the confidence interval) and 
+        intercept for each grid point.
+    """    
+
+    # Extract xarray DataArray object.
+    data_array = getattr(data_set, var_code)
+    
+    # Standard data form.
+    data_array = cdlearn.utils.organize_data(data_array)
+   
+    # Apply vectorized function.
+    results_data_array = xr.apply_ufunc(
+        _theil_slopes_ufunc, data_array,
+        input_core_dims=[[dim]],
+        output_core_dims=[["parameters"]],
+        output_dtypes=["float32"],
+        output_sizes={"parameters": 4},
+        vectorize=True,
+        dask="parallelized"
+    )
+    
+    # Coordinates of this temporary dimension.
+    results_data_array["parameters"] = [
+        "slopes", "intercept", "lower_slope", "upper_slope"
+    ]
+    
+    # Turn this xarray DataArray object into an xarray Dataset object deleting 
+    # 'parameters' dimension. Now this Dataset has four variables: (1) Theil 
+    # slope, (2) Intercept of the Theil line, (3) Lower and (4) upper bounds 
+    # of the confidence interval on Theil slope. 
+    results = results_data_array.to_dataset(dim="parameters")
+
+    return results    
