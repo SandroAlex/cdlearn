@@ -15,7 +15,6 @@ import xarray as xr
 from importlib import reload
 from scipy import stats
 from tqdm import tqdm
-from numba import jit
 
 # My modules.
 import cdlearn.utils
@@ -218,7 +217,6 @@ def theil_slopes(
     return results
 
 ###############################################################################
-@jit(nogil=True)
 def _theil_slopes_ufunc(
         y
     ):

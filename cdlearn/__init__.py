@@ -8,7 +8,11 @@ of Granger causality and machine learning.
 """
 
 # Load packages.
+import os
 from importlib import reload
+
+# Upper folder for this module. Absolute path.
+module_path = os.path.dirname(os.path.dirname(__file__))
 
 # My modules. 
 from . import maps
